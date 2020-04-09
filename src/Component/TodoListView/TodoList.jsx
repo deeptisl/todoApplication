@@ -12,6 +12,7 @@ function mapDispatchToProps(dispatch) {
         addListItem: listItem => dispatch(actions.addListItem(listItem)),
         updateListItem: updateditem =>
             dispatch(actions.updateListItem(updateditem)),
+        deleteListItem: id => dispatch(actions.deleteListItem(id))
     };
 }
 
@@ -30,7 +31,8 @@ class TodoList extends Component {
             addedItem: '',
             activeModel: false,
             updateData: '',
-            currentId: 0
+            currentId: 0,
+            totalListData: []
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -57,7 +59,8 @@ class TodoList extends Component {
         };
         this.props.addListItem(listItemObject);
         this.setState({
-            addedItem: ''
+            addedItem: '',
+            totalListData: this.props.todos
         })
     }
 
@@ -82,6 +85,13 @@ class TodoList extends Component {
         })
     }
 
+    handleDeleteList(deleteId) {
+        this.props.deleteListItem(deleteId);
+        this.setState({
+            totalListData: this.props.todos
+        })
+    }
+
     render() {
         return (
             <div className="component">
@@ -97,7 +107,7 @@ class TodoList extends Component {
                                 />
                             </Col>
                             <Col sm={3}>
-                                <Button variant="primary" type="button" onClick={() => this.addItemValue()}>
+                                <Button variant="primary" type="button" disabled={!this.state.addedItem} onClick={() => this.addItemValue()}>
                                     Add List
                             </Button>
                             </Col>
@@ -105,9 +115,9 @@ class TodoList extends Component {
                     </Form>
                 </div>
                 {
-                    this.props.todos.length ?
+                    this.state.totalListData.length ?
                         <div >
-                            {this.props.todos.map((todoList, index) => {
+                            {this.state.totalListData.map((todoList, index) => {
                                 return (
                                     <Card className="card">
                                         <ListGroup
@@ -136,11 +146,11 @@ class TodoList extends Component {
                                                         <button
                                                             type="button"
                                                             className="btn btn-primary btn-sm"
-                                                        // onClick={() =>
-                                                        //     this.handleDeleteOrganisation(
-                                                        //         organisationList
-                                                        //     )
-                                                        // }
+                                                            onClick={() =>
+                                                                this.handleDeleteList(
+                                                                    index
+                                                                )
+                                                            }
                                                         >
                                                             {' '}
                                                             <Icon size={18} icon={deleteIcon} />
@@ -153,30 +163,28 @@ class TodoList extends Component {
                                 );
                             })}
                         </div> :
-                        null
+                        <h3>Please Add Some Data For List</h3>
                 }
                 <Modal show={this.state.activeModel}>
-                    <Modal.Title align="center">Update Your List Data</Modal.Title>
+                    <Modal.Title className="ModalTitle">Update Your List Data</Modal.Title>
                     <Modal.Body>
                         <Form className="ModalStyle">
                             <Form.Group as={Row} controlId="updateList">
                                 <Form.Control
                                     as="textarea"
-                                    rows="5"
+                                    rows="3"
                                     placeholder="Type your here"
                                     defaultValue={this.state.updateData}
                                     onChange={this.handleChange}
                                 />
                             </Form.Group>
-                            <Button
-                                type="button"
-                                className="btn btn-primary btn-fill btn-wd"
-                                onClick={() => this.handleSave()}
-                            >
-                                Save Data
-                            </Button>
-
                         </Form>
+                        <Button
+                            type="button"
+                            onClick={() => this.handleSave()}
+                        >
+                            Update Data
+                        </Button>
                     </Modal.Body>
                 </Modal>
 
@@ -188,5 +196,5 @@ class TodoList extends Component {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-  )(TodoList);
+)(TodoList);
 

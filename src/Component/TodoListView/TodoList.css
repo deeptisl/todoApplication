@@ -10,5 +10,9 @@
     background-color:cyan;
 }
 .ModalStyle {
-    margin: 10%;
+    margin: 10px;
   }
+.ModalTitle{
+    padding: 10px;
+    align-self: center;
+}
